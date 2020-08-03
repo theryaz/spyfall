@@ -1,9 +1,6 @@
-export interface Location{
-	name: string,
-	roles: string[],
-}
+import { Location } from '../../../spyfall_vue/types/interfaces';
 
-export const Locations: Location[] = [
+export const LOCATIONS: Location[] = [
 	// Entertainment Venues
 	{
 		name:  "Beach",

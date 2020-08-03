@@ -92,6 +92,11 @@ class BackendService{
 	}: { gameId: string; playerId: string }): Promise<void>{
 		await this.post(`/v1/game/exit/${gameId}`, { playerId });
 	}
+	async resetGame({
+		gameId,
+	}: { gameId: string }): Promise<void>{
+		await this.post(`/v1/game/reset/${gameId}`, {});
+	}
 
 }
 

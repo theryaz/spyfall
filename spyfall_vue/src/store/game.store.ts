@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import store from '../store/store';
-import { sleep } from '@/helpers';
 import router from '@/router';
 import { LocalStorageKeys, SocketEvents } from '@/config/constants';
 import localforage from 'localforage';
@@ -32,7 +31,6 @@ const getDefaultGameState = (): GameState => ({
 	players: [],
 	hostId: "",
 	firstQuestionId: "",
-	location: "",
 	locations: [],
 })
 @Module({
@@ -132,10 +130,14 @@ export default class GameModule extends VuexModule {
 	@Action({ rawError: true })
 	async createGame(){
 		this.context.commit(Mutations.CREATE_GAME);
-		const { gameState, player } = await api.createGame({ userIdentity: this.UserIdentity });
-		this.setPlayerId({playerId: player.id});
-		this.updateGameState({gameState});
-		this.context.commit(Mutations.CREATE_GAME_SUCCESS);
+		try{
+			const { gameState, player } = await api.createGame({ userIdentity: this.UserIdentity });
+			this.setPlayerId({playerId: player.id});
+			this.updateGameState({gameState});
+			this.context.commit(Mutations.CREATE_GAME_SUCCESS);
+		}catch(e){
+			this.context.commit(Mutations.CREATE_GAME_FAILURE, e);
+		}
 	}
 	@Mutation [Mutations.CREATE_GAME](){
 		this.createGameLoading = true;
@@ -152,7 +154,7 @@ export default class GameModule extends VuexModule {
 	@Action({ rawError: true })
 	async startGame() {
 		this.context.commit(Mutations.START_GAME);
-		// this.updateGameState({ gameState });
+		await api.startGame({ gameId: this.gameState.id });
 		this.context.commit(Mutations.START_GAME_SUCCESS);
 	}
 	@Mutation [Mutations.START_GAME]() {
@@ -186,6 +188,11 @@ export default class GameModule extends VuexModule {
 	}
 	@Mutation [Mutations.JOIN_GAME_FAILURE]() {
 		this.joinGameLoading = false;
+	}
+
+	@Action({ rawError: true })
+	async resetGame() {
+		await api.resetGame({ gameId: this.gameState.id });
 	}
 
 	@Action({ rawError: true })

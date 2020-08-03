@@ -1,3 +1,4 @@
+import { Location } from './Location';
 import { Player } from './Player';
 import { GameStatus } from '../enums';
 
@@ -8,6 +9,6 @@ export interface GameState{
 	hostId: string;
 	firstQuestionId: string;
 	players: Player[];
-	location: string;
+	location?: Location;
 	locations: string[];
 }

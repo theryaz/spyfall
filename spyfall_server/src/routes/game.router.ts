@@ -34,6 +34,13 @@ export class GameRouter{
 					const { gameState, player } = await this.gameService.joinGame({ userIdentity, clientId, gameId, playerId });
 					res.json({ gameState, player });
 				}));
+		this.router.route("/reset/:gameId")
+			.post(sanitizeBody,
+				asyncWrap(async (req, res) => {
+					const { gameId } = req.params;
+					await this.gameService.resetGame({ gameId });
+					res.status(200).end();
+				}));
 		this.router.route("/exit/:gameId")
 			.post(sanitizeBody,
 				asyncWrap(async (req, res) => {

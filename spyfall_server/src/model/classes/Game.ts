@@ -1,21 +1,29 @@
-import { GameState, UserIdentity, Player } from '../../../../spyfall_vue/types/interfaces';
+import { GameState, UserIdentity, Player, Location } from '../../../../spyfall_vue/types/interfaces';
 import { GameStatus } from '../../../../spyfall_vue/types/enums';
 import { SocketEvents } from '../../../../spyfall_vue/src/config/constants/socket';
-import { randomString, randomElement, createLogger } from '../../shared';
+import { randomString, randomElement, createLogger, randomNumber } from '../../shared';
 import { Logger } from 'winston';
 import { BadRequestError } from '../../errors';
+import { LOCATIONS } from '../../db/locations';
 import { SocketIOController } from '../socket.io.controller';
 const logger = createLogger('');
 
-const getDefaultGameState = (): GameState => ({
-	id: '',
+const getDefaultGameState = ({
+	players = [],
+	id = "",
+	hostId = "",
+}: {
+	players?: Player[],
+	id?: string,
+	hostId?: string,
+} = {}): GameState => ({
+	id: id,
 	status: GameStatus.WaitingToStart,
-	timerSeconds: 0,
-	players: [],
-	hostId: "",
+	timerSeconds: 500,
+	players: players,
+	hostId: hostId,
 	firstQuestionId: "",
-	location: "",
-	locations: [],
+	locations:[],
 })
 
 export class Game{
@@ -32,20 +40,47 @@ export class Game{
 		return this.state.id;
 	}
 
-	start(){
-		if (this.state.status === GameStatus.InProgress){
-			throw new BadRequestError("Game is alreay in progress");
-		}
-		this.state.status = GameStatus.InProgress;
-		this.state.firstQuestionId = randomElement<Player>(this.state.players).id;
+	reset(){
+		this.state = getDefaultGameState({
+			players: this.state.players,
+			id: this.state.id,
+			hostId: this.state.hostId,
+		});
 		this.broadcastGameState();
 	}
 
-	assignRandomRoles(){
-		
+	start(){
+		logger.info("Starting Game");
+		if (this.state.status === GameStatus.InProgress){
+			throw new BadRequestError("Game is alreay in progress");
+		}
+		this.setupGame();
+		this.broadcastGameState();
 	}
-	getRandomLocation(){
-		
+
+	setupGame(){
+		this.state.status = GameStatus.InProgress;
+		this.state.firstQuestionId = randomElement(this.state.players).id;
+		this.state.location = this.getRandomLocation();
+		this.state.locations = LOCATIONS.map(l => l.name);
+		this.assignRandomRoles(this.state.location);
+	}
+	assignRandomRoles(location: Location){
+		let roles = location.roles.slice();
+		for(const player of this.state.players){
+			if(roles.length === 0){
+				roles = location.roles.slice();
+			}
+			const [role] = roles.splice(randomNumber(0, roles.length), 1);
+			logger.debug(`Assign Random Roles ${player.identity.name} => ${role}`);
+			player.role = role;
+		}
+		const spy = randomElement(this.state.players);
+		logger.debug(`The Spy is ${spy.identity.name}`);
+		spy.role = "Spy";
+	}
+	getRandomLocation(): Location{
+		return randomElement(LOCATIONS);
 	}
 
 	async broadcast(event: string, payload?: any){

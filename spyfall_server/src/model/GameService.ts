@@ -41,6 +41,11 @@ export class GameService{
 		return { gameState: game.state, player };
 	}
 
+	async resetGame({ gameId }: { gameId: string; }): Promise<void>{
+		const game = this.findById(gameId);
+		game.reset();
+	}
+
 	async exitGame({ gameId, playerId }: { gameId: string; playerId: string }): Promise<void>{
 		const game = this.findById(gameId);
 		const player = game.findPlayerById(playerId);

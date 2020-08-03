@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { logger } from './winston-logger';
 
 export function randomAlphaString(length: number){
 	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -15,7 +16,7 @@ export function randomString(length: number){
 }
 
 export function randomNumber(min: number, max: number){
-	return Math.floor(Math.random() * (max - min)) + min;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function randomElement<T>(arr: T[]): T{

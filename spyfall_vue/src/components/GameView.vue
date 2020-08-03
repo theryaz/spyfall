@@ -22,18 +22,32 @@
 				</v-btn>
 			</v-col>
 		</v-row>
-		<!-- <hr class="my-4" /> -->
-		<v-row dense class="my-4" v-if="FirstQuestionPlayer !== undefined">
-			<v-col class="text-center d-flex flex-column">
-				First Question:
-				<UserChip
-					:size="30"
-					class="mx-auto my-2"
-					:user="FirstQuestionPlayer.identity"
-				/>
-			</v-col>
-		</v-row>
-		<!-- <hr class="my-4" /> -->
+		<h5 class="mt-4">
+			Players
+		</h5>
+		<v-item-group multiple>
+			<v-row dense>
+				<v-col v-for="(player, index) of Players" :key="index">
+					<v-item v-slot:default="{ active, toggle }">
+						<v-btn
+							color="primary"
+							outlined block
+							:class="{'strike-through': active}"
+							@click="toggle"
+						>
+							<UserChip
+								:size="30"
+								class="mx-auto my-2"
+								:user="player.identity"
+							/>
+						</v-btn>
+					</v-item>
+				</v-col>
+			</v-row>
+		</v-item-group>
+		<h5 class="mt-4">
+			Locations
+		</h5>
 		<v-item-group multiple>
 			<v-row dense>
 				<v-col cols="6" sm="4" v-for="(location, index) of gameState.locations" :key="index">
@@ -41,7 +55,7 @@
 						<v-btn
 							small
 							block
-							color="secondary"
+							color="primary"
 							:outlined="active"
 							:class="{'strike-through': active}"
 							@click="toggle"
@@ -52,12 +66,31 @@
 				</v-col>
 			</v-row>
 		</v-item-group>
+		<v-row dense class="mt-6">
+			<v-col cols="6" v-if="PlayerIsHost">
+				<v-btn
+					@click="resetGame"
+					outlined
+					large block color="error"
+				>
+					End Game
+				</v-btn>
+			</v-col>
+			<v-col :cols="PlayerIsHost ? 6 : 12">
+				<v-btn
+					large block color="primary"
+				>
+					Vote
+				</v-btn>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserChip from './UserChip.vue';
-import { GameState, Player } from '../../types/interfaces';
+import { GameState, Player, Location } from '../../types/interfaces';
+import { gameStore } from '../store';
 @Component({
 	components: { UserChip },
 })
@@ -74,6 +107,9 @@ export default class GameView extends Vue{
 	get Player(): Player | undefined{
 		return this.gameState.players.find(p => p.id === this.playerId);
 	}
+	get Players(): Player[]{
+		return this.gameState.players;
+	}
 	get FirstQuestionPlayer(): Player | undefined{
 		return this.gameState.players.find(p => p.id === this.gameState.firstQuestionId);
 	}
@@ -82,7 +118,11 @@ export default class GameView extends Vue{
 		return this.PlayerRole === 'Spy';
 	}
 	get PlayerRole(){
-		return this.Player && this.Player.role;
+		if(this.Player === undefined) return "";
+		return this.Player.role;
+	}
+	get PlayerIsHost(): boolean{
+		return this.gameState.hostId === this.playerId;
 	}
 
 	get Role(){
@@ -95,13 +135,20 @@ export default class GameView extends Vue{
 		if(this.PlayerIsSpy){
 			return 'Location: ???';
 		}
-		return `Location: <strong>${this.gameState.location}</strong>`;
+		return `Location: <strong>${this.gameState.location.name}</strong>`;
 	}
 	get ToggleButtonText(){
 		if(this.hideRoleInfo){
 			return "Reveal Role";
 		}
 		return "Hide Role";
+	}
+
+	resetGame(){
+		gameStore.resetGame();
+	}
+	exitGame(){
+		gameStore.exitGame();
 	}
 }
 </script>
