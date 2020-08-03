@@ -38,7 +38,14 @@ export class Game{
 		}
 		this.state.status = GameStatus.InProgress;
 		this.state.firstQuestionId = randomElement<Player>(this.state.players).id;
-		this.broadcast(SocketEvents.GAME_START, { state: this.state, });
+		this.broadcastGameState();
+	}
+
+	assignRandomRoles(){
+		
+	}
+	getRandomLocation(){
+		
 	}
 
 	async broadcast(event: string, payload?: any){

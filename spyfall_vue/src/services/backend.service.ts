@@ -69,6 +69,12 @@ class BackendService{
 			player: res.data.player,
 		};
 	}
+	async startGame({ gameId }: { gameId: string }): Promise<{gameState: GameState}>{
+		const res = await this.post(`/v1/game/start/${gameId}`, {});
+		return {
+			gameState: res.data.gameState,
+		};
+	}
 	async joinGame({
 		gameId,
 		userIdentity,
