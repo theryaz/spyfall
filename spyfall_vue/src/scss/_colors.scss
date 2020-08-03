@@ -1,0 +1,18 @@
+/* SCSS HEX */
+$charcoal: #264653ff;
+$persian-green: #2a9d8fff;
+$light-gray: #dad2d8ff;
+$carrot-orange: #ec9a29ff;
+$carnelian: #a8201aff;
+
+
+:export{
+	primary: $charcoal;
+	secondary: $persian-green;
+	accent: $light-gray;
+	accent-orange: $carrot-orange;
+	error: $carnelian;
+	info: '#2196F3';
+	success: '#4CAF50';
+	warning: '#FFC107';
+}
