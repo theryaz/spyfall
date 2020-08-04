@@ -21,6 +21,7 @@ const Mutations = {
 	JOIN_GAME: 'JOIN_GAME',
 	JOIN_GAME_SUCCESS: 'JOIN_GAME_SUCCESS',
 	JOIN_GAME_FAILURE: 'JOIN_GAME_FAILURE',
+	UPDATE_COUNTDOWN: 'UPDATE_COUNTDOWN',
 }
 const name = 'GameStore';
 
@@ -28,6 +29,7 @@ const getDefaultGameState = (): GameState => ({
 	id: '',
 	status: GameStatus.WaitingToStart,
 	timerSeconds: 0,
+	currentTimer: 0,
 	players: [],
 	hostId: "",
 	firstQuestionId: "",
@@ -46,6 +48,11 @@ export default class GameModule extends VuexModule {
 
 	get UserIdentity(): UserIdentity{
 		return this.context.rootState.UserStore.user;
+	}
+
+	get IsHost(): boolean{
+		if (this.Player === undefined) return false;
+		return this.Player.id === this.gameState.hostId;
 	}
 
 	get InGame(): boolean{
@@ -73,6 +80,11 @@ export default class GameModule extends VuexModule {
 		api.Socket.on(SocketEvents.GAME_CLOSED, () => {
 			console.log("SocketEvents.GAME_CLOSED");
 			this.exitGame();
+		});
+		api.Socket.on(SocketEvents.UPDATE_GAME_COUNTDOWN, (currentTimer: number) => {
+			if (!this.IsHost){
+				this.updateGameTime(currentTimer);
+			}
 		});
 	}
 
@@ -154,8 +166,13 @@ export default class GameModule extends VuexModule {
 	@Action({ rawError: true })
 	async startGame() {
 		this.context.commit(Mutations.START_GAME);
-		await api.startGame({ gameId: this.gameState.id });
-		this.context.commit(Mutations.START_GAME_SUCCESS);
+		try{
+			await api.startGame({ gameId: this.gameState.id });
+			this.context.commit(Mutations.START_GAME_SUCCESS);
+		}catch(e){
+			console.error("Failed to start Game", e);
+			this.context.commit(Mutations.START_GAME_FAILURE);
+		}
 	}
 	@Mutation [Mutations.START_GAME]() {
 		this.startGameLoading = true;
@@ -171,14 +188,19 @@ export default class GameModule extends VuexModule {
 	@Action({ rawError: true })
 	async joinGame({ gameId, playerId }: { gameId: string; playerId?: string }) {
 		this.context.commit(Mutations.JOIN_GAME);
-		const { gameState, player } = await api.joinGame({
-			gameId,
-			userIdentity: this.UserIdentity,
-			playerId,
-		});
-		this.setPlayerId({ playerId: player.id });
-		this.updateGameState({ gameState });
-		this.context.commit(Mutations.JOIN_GAME_SUCCESS);
+		try{
+			const { gameState, player } = await api.joinGame({
+				gameId,
+				userIdentity: this.UserIdentity,
+				playerId,
+			});
+			this.setPlayerId({ playerId: player.id });
+			this.updateGameState({ gameState });
+			this.context.commit(Mutations.JOIN_GAME_SUCCESS);
+		}catch(e){
+			console.error("Failed to Join Game", e);
+			this.context.commit(Mutations.JOIN_GAME_FAILURE);
+		}
 	}
 	@Mutation [Mutations.JOIN_GAME]() {
 		this.joinGameLoading = true;
@@ -209,13 +231,36 @@ export default class GameModule extends VuexModule {
 	}
 
 	@Action({ rawError: true })
+	async updateGameTime(currentTimer?: number) {
+		if(this.gameState.currentTimer > 0){
+			this.context.commit(Mutations.UPDATE_COUNTDOWN, currentTimer);
+		} else if (this.gameState.currentTimer <= 0){
+			this.context.commit(Mutations.UPDATE_COUNTDOWN, 0);
+		}
+		if(this.IsHost){
+			api.Socket.emit(SocketEvents.UPDATE_GAME_COUNTDOWN, this.gameState.currentTimer);
+		}
+	}
+	@Mutation [Mutations.UPDATE_COUNTDOWN](currentTimer?: number) {
+		if (currentTimer === undefined){
+			this.gameState.currentTimer--;
+		}else{
+			this.gameState.currentTimer = currentTimer;
+		}
+	}
+
+	@Action({ rawError: true })
 	async updateGameState({gameState}: { gameState: GameState }) {
 		this.context.commit(Mutations.UPDATE_GAME_STATE, { gameState });
 		this.saveGameState(gameState);
 		this.syncRouteToGameState();
 	}
 	@Mutation [Mutations.UPDATE_GAME_STATE]({ gameState }: { gameState: GameState }) {
-		this.gameState = gameState;
+		const currentTimer = gameState.currentTimer;
+		this.gameState = {
+			...gameState,
+			currentTimer,
+		};
 	}
 
 	@Action syncRouteToGameState(){

@@ -82,8 +82,8 @@ export default class Home extends Vue{
 	async createGame(){
 		await gameStore.createGame();
 	}
-	async joinGame({ gameId }: {gameId: string}){
-		await gameStore.joinGame({ gameId });
+	async joinGame(){
+		await gameStore.joinGame({ gameId: this.joinGameFormValue.gameId });
 	}
 	get PlayerId(){
 		return gameStore.playerId;

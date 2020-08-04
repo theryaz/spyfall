@@ -6,6 +6,7 @@ export interface GameState{
 	id: string;
 	status: GameStatus;
 	timerSeconds: number;
+	currentTimer: number;
 	hostId: string;
 	firstQuestionId: string;
 	players: Player[];

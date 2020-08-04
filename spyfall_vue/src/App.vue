@@ -44,12 +44,13 @@
 		>
 			<v-app-bar-nav-icon v-if="useNavBar" @click.stop="showSideNav = !showSideNav"></v-app-bar-nav-icon>
 			<v-toolbar-title>
-				<v-btn text @click="clickTitle">
+				<v-btn text>
 					{{ Title }}
 				</v-btn>
 			</v-toolbar-title>
 
 			<v-spacer></v-spacer>
+			<GameTimer :running="GameInProgress && IsHost"/>
 			<v-btn @click="showIdentityDialog = true" text>
 				<v-icon>
 					fa-gear
@@ -71,6 +72,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import UserChip from './components/UserChip.vue';
+import GameTimer from './components/GameTimer.vue';
 import SettingsDialog from './components/SettingsDialog.vue';
 import { UserIdentity, GameState } from '../types/interfaces';
 import { gameStore, userStore } from './store';
@@ -79,7 +81,7 @@ import { GameStatus } from '../types/enums';
 
 @Component({
 	name: 'App',
-	components: { SettingsDialog, UserChip },
+	components: { GameTimer, SettingsDialog, UserChip },
 })
 export default class App extends Vue{
 	useNavBar = false;
@@ -87,9 +89,6 @@ export default class App extends Vue{
 
 	showIdentityDialog = false;
 
-	clickTitle(){
-		this.$router.push(this.HomeLink);
-	}
 	get HomeLink(): RawLocation{
 		if(gameStore.InGame && gameStore.gameState.status === GameStatus.InProgress){
 			return { name: 'GameInProgress' };
@@ -106,6 +105,13 @@ export default class App extends Vue{
 			return 'In Progress';
 		}
 		return 'Spyfall';
+	}
+	get GameInProgress(): boolean{
+		return gameStore.InGame && gameStore.gameState.status === GameStatus.InProgress;
+	}
+
+	get IsHost(): boolean{
+		return gameStore.IsHost;
 	}
 
 	get Game(): GameState{

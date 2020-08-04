@@ -19,7 +19,8 @@ const getDefaultGameState = ({
 } = {}): GameState => ({
 	id: id,
 	status: GameStatus.WaitingToStart,
-	timerSeconds: 500,
+	timerSeconds: 510,
+	currentTimer: 510,
 	players: players,
 	hostId: hostId,
 	firstQuestionId: "",
@@ -99,7 +100,19 @@ export class Game{
 		this.logger.info('setHost', { host });
 		const hostPlayer = this.addPlayer(host, clientId);
 		this.state.hostId = hostPlayer.id;
+		this.listenForTimer(hostPlayer);
 		this.broadcastGameState();
+	}
+	listenForTimer(player: Player) {
+		if (player.clientId === undefined) {
+			logger.error("listenForTimer Host doesn't have a clientId", { player });
+			return;
+		}
+		const socket = this.io.connectedClients[player.clientId];
+		socket.on(SocketEvents.UPDATE_GAME_COUNTDOWN, (currentTimer: number) => {
+			this.state.currentTimer = currentTimer;
+			this.broadcast(SocketEvents.UPDATE_GAME_COUNTDOWN, this.state.currentTimer);
+		});
 	}
 
 	addPlayer(playerIdentity: UserIdentity, clientId: string, playerId?: string){
@@ -111,6 +124,9 @@ export class Game{
 				player.id = playerId;
 				player.clientId = clientId;
 				player.identity = playerIdentity;
+				if(player.id === this.state.hostId){
+					this.listenForTimer(player);
+				}
 				this.logger.info('addPlayer: Rejoined existing player', { player });
 			}
 		}

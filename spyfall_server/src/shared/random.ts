@@ -5,7 +5,7 @@ export function randomAlphaString(length: number){
 	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	let str = '';
 	for(let i = 0; i < length; i++){
-		str += chars[randomNumber(0,chars.length)];
+		str += chars[randomNumber(0,chars.length-1)];
 	}
 	return str;
 }
