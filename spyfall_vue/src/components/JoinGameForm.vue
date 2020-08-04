@@ -14,14 +14,6 @@
 				</v-text-field>
 			</v-col>
 		</v-row>
-		<v-row>
-			<v-col class="d-flex">
-				<v-spacer></v-spacer>
-				<v-btn @click="submit" :disabled="SubmitDisabled" large block color="secondary" class="white--text">
-					Join Game
-				</v-btn>
-			</v-col>
-		</v-row>
 	</v-form>
 </template>
 <script lang="ts">
@@ -45,7 +37,7 @@ export default class JoinGameForm extends Mixins(FormRulesMixin){
 	}
 
 	get Placeholder(){
-		return 'Game Id';
+		return 'Enter a game id to join';
 	}
 
 	get SubmitDisabled(){

@@ -10,7 +10,7 @@
 		</v-avatar>
 	</template>
 	<div class="my-auto" :class="{'accent--text': dark}">
-		<slot name="name">
+		<slot name="name" :userName="Name" :away="away">
 			{{ Name }} <span v-if="away">(zzz)</span>
 		</slot>
 	</div>

@@ -1,13 +1,17 @@
 {
   "name": "spyfall_vue",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:production": "vue-cli-service build --mode production",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy:production": "npm run build:production && npm run s3sync:production",
+    "s3sync:production": "aws s3 sync --delete --acl public-read dist s3://spyfall.v-eden.com && aws cloudfront create-invalidation --distribution-id EAGI76H9URGPK --paths /index.html",
+    "generate-pwa-assets": "pwa-asset-generator ./img/spyfall_icon.png --manifest ../manifest.json --index ./index.html --opaque false"
   },
   "dependencies": {
     "axios": "^0.19.2",

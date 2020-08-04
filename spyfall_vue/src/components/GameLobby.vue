@@ -9,7 +9,8 @@
 			<v-col class="text-center">
 				Game Id: <strong class="monospace">{{GameId}}</strong>
 			</v-col>
-			<v-col class="text-center">
+			<!-- Messenger blocks the @v-eden.com domain so copying the link isn't very useful... -->
+			<!-- <v-col class="text-center">
 				<CopyToClipboard :clipboardText="GameUrl" no-icon>
 					<v-btn color="primary" outlined small>
 						<v-icon small class="mr-2">
@@ -18,7 +19,7 @@
 						Invite Link
 					</v-btn>
 				</CopyToClipboard>
-			</v-col>
+			</v-col> -->
 		</v-row>
 		<v-list>
 			<v-scroll-y-transition group>

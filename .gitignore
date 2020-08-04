@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-client/dist
+spyfall_vue/dist
 
 # local env files
 .env.local
@@ -21,4 +21,4 @@ yarn-error.log*
 *.sw?
 
 mongo_data
-server/dist
+spyfall_server/dist

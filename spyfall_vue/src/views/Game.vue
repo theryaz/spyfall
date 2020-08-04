@@ -1,5 +1,5 @@
 <template>
-	<div class="pa-4 fill-height">
+	<div class="pa-4">
 		<router-view></router-view>
 	</div>
 </template>

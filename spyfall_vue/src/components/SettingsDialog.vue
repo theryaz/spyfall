@@ -18,8 +18,18 @@
 				</v-btn>
 			</v-toolbar-items>
 		</v-toolbar>
+		<v-form @submit.prevent="submit" v-model="formValue.valid">
 		<v-row justify="center" class="my-6 mx-4">
-			<UserChip :user="UserPreview" />
+			<UserChip :user="UserPreview">
+				<template v-slot:name>
+					<v-text-field
+						solo
+						@input="update"
+						v-model="user.name"
+						append-icon="fal fa-edit"
+					/>
+				</template>
+			</UserChip>
 		</v-row>
 		<v-row dense class="mx-4">
 			<v-col>
@@ -71,38 +81,24 @@
 				</ColorPicker>
 			</v-col>
 		</v-row>
-		<v-row dense class="mx-4">
-			<v-col>
-				<v-btn @click="reset" outlined color="error" block small>
-					<v-icon small class="mr-2">
-						fa-undo
-					</v-icon>
-					Reset
-				</v-btn>
-			</v-col>
-		</v-row>
-		<v-form @submit.prevent="submit" class="pa-4" v-model="formValue.valid">
-			<v-row>
-				<v-col>
-					<v-text-field
-						solo hide-details placeholder="Nickname"
-						@input="update"
-						v-model="user.name"
-						:rules="rules.required('Nickname')"
-						append-icon="fal fa-mask"
-					>
-					</v-text-field>
+		<v-footer fixed>
+			<v-row dense>
+				<v-col cols="6">
+					<v-btn @click="reset" outlined color="error" block large>
+						<v-icon small class="mr-2">
+							fa-undo
+						</v-icon>
+						Reset
+					</v-btn>
 				</v-col>
-			</v-row>
-			<v-row>
-				<v-col class="d-flex">
-					<v-spacer></v-spacer>
+				<v-col cols="6">
 					<v-btn @click="submit" :disabled="!formValue.valid" large block color="secondary" class="white--text">
 						Save
 					</v-btn>
 				</v-col>
 			</v-row>
-			<button type="submit" hidden />
+		</v-footer>
+		<button type="submit" hidden />
 		</v-form>
 	</v-card>
 </v-dialog>
