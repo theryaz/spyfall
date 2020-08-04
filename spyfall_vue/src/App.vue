@@ -40,7 +40,7 @@
 		<v-app-bar
 			app
 			color="primary"
-			dark
+			dark dense
 		>
 			<v-app-bar-nav-icon v-if="useNavBar" @click.stop="showSideNav = !showSideNav"></v-app-bar-nav-icon>
 			<v-toolbar-title>
@@ -50,14 +50,13 @@
 			</v-toolbar-title>
 
 			<v-spacer></v-spacer>
-			<GameTimer :running="GameInProgress && IsHost"/>
+			<GameTimer v-if="GameInProgress" :running="GameInProgress && IsHost"/>
 			<v-btn @click="showIdentityDialog = true" text>
 				<v-icon>
 					fa-gear
 				</v-icon>
 			</v-btn>
 		</v-app-bar>
-
 		<v-main>
 			<router-view @show:identity-dialog="showIdentityDialog = true"></router-view>
 		</v-main>
@@ -101,8 +100,8 @@ export default class App extends Vue{
 	get Title(): string{
 		if(gameStore.InGame && gameStore.gameState.status === GameStatus.WaitingToStart){
 			return 'Waiting to start';
-		}else if(gameStore.InGame && gameStore.gameState.status === GameStatus.WaitingToStart){
-			return 'In Progress';
+		}else if(gameStore.InGame && gameStore.gameState.status === GameStatus.InProgress){
+			return 'Find the Spy';
 		}
 		return 'Spyfall';
 	}

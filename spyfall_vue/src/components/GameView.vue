@@ -29,20 +29,20 @@
 			<v-row dense>
 				<v-col v-for="(player, index) of Players" :key="index">
 					<v-item v-slot:default="{ active, toggle }">
-						<v-btn
-							:color="active ? 'accent' : 'primary'"
-							outlined block
-							:class="{'strike-through': active}"
+						<UserChip
 							@click="toggle"
+							:size="30"
+							class="mx-auto my-2"
+							:splat="FirstQuestionPlayer === player"
+							splat-dot
+							:user="player.identity"
 						>
-							<UserChip
-								:size="30"
-								class="mx-auto my-2"
-								:splat="FirstQuestionPlayer === player"
-								splat-dot
-								:user="player.identity"
-							/>
-						</v-btn>
+							<template v-slot:name="{ away, userName }">
+								<v-badge bottom left color="error" dot :value="active">
+									{{ userName }}
+								</v-badge>
+							</template>
+						</UserChip>
 					</v-item>
 				</v-col>
 			</v-row>

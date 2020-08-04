@@ -101,7 +101,7 @@ export default class Home extends Vue{
 		if(this.$route.query.gameId && !Array.isArray(this.$route.query.gameId)){
 			this.joinGameFormValue.gameId = this.$route.query.gameId;
 			setTimeout(() => {
-				this.joinGame({ gameId: this.joinGameFormValue.gameId });
+				this.joinGame();
 			}, 1000);
 		}
 	}
