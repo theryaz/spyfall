@@ -1,13 +1,29 @@
 <template>
 <div class="d-flex cursor-pointer" @click="$emit('click')">
 	<template v-if="!hideAvatar">
-		<v-avatar :size="size" :color="user.color" class="mr-2">
-			<slot name="icon">	
-				<v-icon :size="IconSize" :color="user.iconColor">
-					{{ user.icon }}
-				</v-icon>
-			</slot>
-		</v-avatar>
+		<div>
+			<v-badge
+				:value="splat"
+				:dot="splatDot"
+				:color="splatColor"
+				overlap left bottom
+				>
+				<template v-slot:badge>
+					<slot name="badge" :away="away">
+						<v-icon color="white" x-small>
+							fa-asterisk
+						</v-icon>
+					</slot>
+				</template>
+				<v-avatar :size="size" :color="user.color" class="mr-2 avatar-wrapper">
+					<slot name="icon">	
+						<v-icon :size="IconSize" :color="user.iconColor">
+							{{ user.icon }}
+						</v-icon>
+					</slot>
+				</v-avatar>
+			</v-badge>
+		</div>
 	</template>
 	<div class="my-auto" :class="{'accent--text': dark}">
 		<slot name="name" :userName="Name" :away="away">
@@ -26,6 +42,9 @@ export default class UserChip extends Vue{
 	@Prop({ type: Boolean, default: false }) dark?: boolean;
 	@Prop({ type: Boolean, default: false }) hideAvatar?: boolean;
 	@Prop({ type: Boolean, default: false }) away?: boolean;
+	@Prop({ type: Boolean, default: false }) splat?: boolean;
+	@Prop({ type: Boolean, default: false }) splatDot?: boolean;
+	@Prop({ default: "secondary" }) splatColor?: string;
 	@Prop({default: (): UserIdentity => ({
 		name: '',
 		color: 'secondary',

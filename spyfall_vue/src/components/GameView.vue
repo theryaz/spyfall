@@ -30,7 +30,7 @@
 				<v-col v-for="(player, index) of Players" :key="index">
 					<v-item v-slot:default="{ active, toggle }">
 						<v-btn
-							color="primary"
+							:color="active ? 'accent' : 'primary'"
 							outlined block
 							:class="{'strike-through': active}"
 							@click="toggle"
@@ -38,6 +38,8 @@
 							<UserChip
 								:size="30"
 								class="mx-auto my-2"
+								:splat="FirstQuestionPlayer === player"
+								splat-dot
 								:user="player.identity"
 							/>
 						</v-btn>
@@ -55,7 +57,7 @@
 						<v-btn
 							small
 							block
-							color="primary"
+							:color="active ? 'accent' : 'primary'"
 							outlined
 							:class="{'strike-through': active}"
 							@click="toggle"
@@ -89,7 +91,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserChip from './UserChip.vue';
-import { GameState, Player, Location } from '../../types/interfaces';
+import { GameState, Player } from '../../types/interfaces';
 import { gameStore } from '../store';
 @Component({
 	components: { UserChip },
