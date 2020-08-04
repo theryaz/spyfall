@@ -60,7 +60,7 @@
 		<v-main>
 			<router-view @show:identity-dialog="showIdentityDialog = true"></router-view>
 		</v-main>
-		<ConfigureIdentity
+		<SettingsDialog
 			:show.sync="showIdentityDialog"
 			:user="User"
 			@submit="setUser"
@@ -71,7 +71,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import UserChip from './components/UserChip.vue';
-import ConfigureIdentity from './components/ConfigureIdentity.vue';
+import SettingsDialog from './components/SettingsDialog.vue';
 import { UserIdentity, GameState } from '../types/interfaces';
 import { gameStore, userStore } from './store';
 import { RawLocation } from 'vue-router';
@@ -79,7 +79,7 @@ import { GameStatus } from '../types/enums';
 
 @Component({
 	name: 'App',
-	components: { ConfigureIdentity, UserChip },
+	components: { SettingsDialog, UserChip },
 })
 export default class App extends Vue{
 	useNavBar = false;

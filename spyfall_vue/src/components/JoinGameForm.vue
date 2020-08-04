@@ -3,8 +3,11 @@
 		<v-row>
 			<v-col>
 				<v-text-field
-					solo hide-details placeholder="Game Id"
+					:disabled="disabled"
+					solo hide-details
+					:placeholder="Placeholder"
 					v-model="formValue.gameId"
+					@input="updateValue"
 					:rules="rules.required('Game Id')"
 					append-icon="fal fa-mask"
 				>
@@ -14,7 +17,7 @@
 		<v-row>
 			<v-col class="d-flex">
 				<v-spacer></v-spacer>
-				<v-btn @click="submit" :disabled="!formValue.valid" large block color="secondary" class="white--text">
+				<v-btn @click="submit" :disabled="SubmitDisabled" large block color="secondary" class="white--text">
 					Join Game
 				</v-btn>
 			</v-col>
@@ -22,14 +25,28 @@
 	</v-form>
 </template>
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
 import { FormRulesMixin } from '../mixins';
+import { JoinGameFormValue } from '../../types/interfaces';
 
 @Component
 export default class JoinGameForm extends Mixins(FormRulesMixin){
-	formValue = {
+	@Prop({  type: Boolean, default: false }) disabled: boolean;
+
+	@Prop({ default: () => ({
 		valid: false,
 		gameId: "",
+	}) }) formValue: JoinGameFormValue;
+	updateValue(){
+		this.$emit('update:form-value', this.formValue);
+	}
+
+	get Placeholder(){
+		return 'Game Id';
+	}
+
+	get SubmitDisabled(){
+		return this.disabled || !this.formValue.valid;
 	}
 
 	submit(){

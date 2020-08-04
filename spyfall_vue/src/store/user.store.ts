@@ -24,6 +24,11 @@ const getDefaultUser = (): UserIdentity => ({
 	store: store
 })
 export default class UserModule extends VuexModule {
+
+	get HasName(){
+		return this.user.name !== '';
+	}
+
 	user: UserIdentity = getDefaultUser();
 	@Mutation [Mutations.SET_USER](user: UserIdentity){
 		this.user = user;
@@ -44,5 +49,9 @@ export default class UserModule extends VuexModule {
 			this.context.commit(Mutations.SET_USER, user);
 		}
 		return user;
+	}
+	@Action({ rawError: true })
+	async reset(){
+		this.saveUser(getDefaultUser());
 	}
 }
