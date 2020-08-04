@@ -38,7 +38,10 @@ export default class JoinGameForm extends Mixins(FormRulesMixin){
 		gameId: "",
 	}) }) formValue: JoinGameFormValue;
 	updateValue(){
-		this.$emit('update:form-value', this.formValue);
+		this.$emit('update:form-value', {
+			valid: this.formValue.valid,
+			gameId: this.formValue.gameId.toUpperCase(),
+		});
 	}
 
 	get Placeholder(){

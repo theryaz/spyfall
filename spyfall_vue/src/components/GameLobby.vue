@@ -7,7 +7,17 @@
 		</v-row>
 		<v-row>
 			<v-col class="text-center">
-				GameId: <strong class="monospace">{{GameId}}</strong>
+				Game Id: <strong class="monospace">{{GameId}}</strong>
+			</v-col>
+			<v-col class="text-center">
+				<CopyToClipboard :clipboardText="GameUrl" no-icon>
+					<v-btn color="primary" outlined small>
+						<v-icon small class="mr-2">
+							fa-copy
+						</v-icon>
+						Invite Link
+					</v-btn>
+				</CopyToClipboard>
 			</v-col>
 		</v-row>
 		<v-list>
@@ -47,16 +57,20 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import CopyToClipboard from './CopyToClipboard.vue';
 import UserChip from './UserChip.vue';
 import { GameState, Player } from '../../types/interfaces';
 import { gameStore } from '../store';
 @Component({
-	components: { UserChip },
+	components: { CopyToClipboard, UserChip },
 })
 export default class GameLobby extends Vue{
 	@Prop() playerId: string;
 	@Prop() gameState: GameState;
 
+	get GameUrl(): string{
+		return `${window.location}?gameId=${this.gameState.id}`;
+	}
 	get GameId(): string{
 		return this.gameState.id;
 	}
