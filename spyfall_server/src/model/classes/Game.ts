@@ -71,7 +71,7 @@ export class Game{
 			if(roles.length === 0){
 				roles = location.roles.slice();
 			}
-			const [role] = roles.splice(randomNumber(0, roles.length), 1);
+			const [role] = roles.splice(randomNumber(0, roles.length - 1), 1);
 			logger.debug(`Assign Random Roles ${player.identity.name} => ${role}`);
 			player.role = role;
 		}

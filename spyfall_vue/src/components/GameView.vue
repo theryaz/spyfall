@@ -56,7 +56,7 @@
 							small
 							block
 							color="primary"
-							:outlined="active"
+							outlined
 							:class="{'strike-through': active}"
 							@click="toggle"
 						>
