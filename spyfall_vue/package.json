@@ -14,7 +14,7 @@
     "generate-pwa-assets": "pwa-asset-generator ./img/spyfall_icon.png --manifest ../manifest.json --index ./index.html --opaque false"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "localforage": "^1.9.0",
     "register-service-worker": "^1.7.1",
